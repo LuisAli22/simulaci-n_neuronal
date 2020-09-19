@@ -1,2 +1,2 @@
-# simulaci-n_neuronal
+# simulación-neuronal
 Código fuente del trabajo práctico final de la materia simulación
