@@ -7,7 +7,7 @@ from GeneradorTensionPresinaptica import *
 from Neurona import *
 
 
-if __name__ == '__main__':	
+if __name__ == '__main__':
 	start_time = time.time()
 	ambiente = simpy.Environment()
 	entrada_neuronal = simpy.Store(ambiente)
@@ -18,7 +18,7 @@ if __name__ == '__main__':
 	ambiente.process(generador_tension_presinaptica.realizar_arribos_excitatorios())
 	ambiente.process(generador_tension_presinaptica.realizar_arribos_inhibitorios())
 	ambiente.process(generador_tension_presinaptica.realizar_arribos_nulos())
-	ambiente.run(until=1.0)
+	ambiente.run(until=0.2)
 	print("--- %s seconds ---" % (time.time() - start_time))
 	plt.plot(tension_de_salida)
 	plt.show()

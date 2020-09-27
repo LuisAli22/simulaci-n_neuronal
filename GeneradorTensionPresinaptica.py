@@ -7,8 +7,8 @@ class GeneradorTensionPresinaptica(object):
 		self.entrada_neuronal=entrada_neuronal
 		# self.tiempo_actual=0.0
 		# random_generator=np.random.default_rng()
-		self.tension_excitatoria=ALFA_EXCITATORIO*math.exp(1)/(TAU_EXCITATORIO*CAPACITANCIA_MEMBRANA)
-		self.tension_inhibitoria=ALFA_INHIBITORIO*math.exp(1)/(TAU_INHIBITORIO*CAPACITANCIA_MEMBRANA)
+		self.tension_excitatoria= ALFA_EXCITATORIO*math.exp(1)/(TAU_EXCITATORIO*CAPACITANCIA_MEMBRANA)
+		self.tension_inhibitoria= ALFA_INHIBITORIO*math.exp(1)/(TAU_INHIBITORIO*CAPACITANCIA_MEMBRANA)
 		self.random_generator=np.random.default_rng()
 
 	def realizar_arribos_excitatorios(self):
@@ -16,7 +16,7 @@ class GeneradorTensionPresinaptica(object):
 			tiempo_de_arribo = self.random_generator.exponential(TASA_DE_ARRIBO_EXCITATORIO)
 			yield self.ambiente.timeout(tiempo_de_arribo)
 			yield self.entrada_neuronal.put(self.tension_excitatoria)
-			
+
 	def realizar_arribos_inhibitorios(self):
 		while True:
 			tiempo_de_arribo = self.random_generator.exponential(TASA_DE_ARRIBO_INHIBITORIO)
@@ -25,5 +25,5 @@ class GeneradorTensionPresinaptica(object):
 
 	def realizar_arribos_nulos(self):
 		while True:
-			yield self.ambiente.timeout(PASO)		
+			yield self.ambiente.timeout(PASO)
 			yield self.entrada_neuronal.put(CORRIENTE_NULA)
