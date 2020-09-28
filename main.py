@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-import time
-import simpy
+
 import matplotlib.pyplot as plt
 from definitions import*
 from GeneradorTensionPresinaptica import *
@@ -12,15 +11,16 @@ if __name__ == '__main__':
 	ambiente = simpy.Environment()
 	entrada_neuronal = simpy.Store(ambiente)
 	tension_de_salida=[]
+	tiempo=[]
 	neurona= Neurona(ambiente, entrada_neuronal)
-	generador_tension_presinaptica =GeneradorTensionPresinaptica(ambiente, entrada_neuronal)
-	ambiente.process(neurona.run(tension_de_salida))
+	generador_tension_presinaptica =GeneradorTensionPresinaptica(ambiente, entrada_neuronal, start_time)
+	ambiente.process(neurona.run(tension_de_salida, start_time, tiempo))
 	ambiente.process(generador_tension_presinaptica.realizar_arribos_excitatorios())
 	ambiente.process(generador_tension_presinaptica.realizar_arribos_inhibitorios())
-	ambiente.process(generador_tension_presinaptica.realizar_arribos_nulos())
+	#ambiente.process(generador_tension_presinaptica.realizar_arribos_nulos())
 	ambiente.run(until=0.2)
 	print("--- %s seconds ---" % (time.time() - start_time))
-	plt.plot(tension_de_salida)
+	plt.plot(tiempo, tension_de_salida)
 	plt.show()
 	# Y_k=np.zeros(3)
 	# A=np.array([[-1/TAU_ALFA, 0, 0],

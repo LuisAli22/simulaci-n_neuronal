@@ -28,7 +28,9 @@ class Neurona(object):
 	def obtener_siguiente_estado(self, tension):
 		input=np.array([tension, 0, 0])
 		if self.es_tension_excitatiora(tension):
+			#print("Tension exitatioria")
 			return self.matriz_exponencial_excitatoria.dot(self.Y_k)+input
+		#print("Tension inhibitoria")
 		return self.matriz_exponencial_inhibitoria.dot(self.Y_k)+input
 
 	def esta_en_periodo_refractario(self):
@@ -36,19 +38,19 @@ class Neurona(object):
 			return False
 		return (time.time() - self.inicio_tiempo_refractario <= TIEMPO_REFRACTARIO)
 
-	def run(self, tension_de_salida):
-		#tension_de_salida=0
+	def run(self, tension_de_salida, start_time, tiempo):
+		Y_k_siguiente=np.array([0, 0, POTENCIAL_DE_REPOSO])
 		while True:
-			tension_presinaptica = yield self.entrada_neuronal.get()
+			tension_temporal = yield self.entrada_neuronal.get()
+			tension_presinaptica = tension_temporal[0]
+			tiempo_de_arribo= tension_temporal[1]
 			if self.esta_en_periodo_refractario():
-				self.Y_k=np.array([0, 0, POTENCIAL_DE_REPOSO])
-			Y_k_siguiente= self.obtener_siguiente_estado(tension_presinaptica)
-			tension_de_salida.append(Y_k_siguiente[-1])
-			if Y_k_siguiente[-1] >= TENSION_UMBRAL:
-				#print("Tension ", tension_de_salida[-1]," supera al umbral ",TENSION_UMBRAL)
-				self.Y_k=np.array([0, 0, POTENCIAL_DE_REPOSO])
-				self.inicio_tiempo_refractario = time.time()
-
+				Y_k_siguiente=np.array([0, 0, POTENCIAL_DE_REPOSO])
 			else:
-				#print("Tension ", tension_de_salida[-1]," NO supera al umbral ")
-				self.Y_k=Y_k_siguiente
+				self.inicio_tiempo_refractario= 0
+				Y_k_siguiente= self.obtener_siguiente_estado(tension_presinaptica)
+			if Y_k_siguiente[-1] >= TENSION_UMBRAL:
+				self.inicio_tiempo_refractario = time.time()
+			tension_de_salida.append(Y_k_siguiente[-1]*1000)
+			tiempo.append(tiempo_de_arribo)
+			self.Y_k=Y_k_siguiente
