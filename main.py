@@ -12,14 +12,15 @@ if __name__ == '__main__':
 	entrada_neuronal = simpy.Store(ambiente)
 	tension_de_salida=[]
 	tiempo=[]
-	neurona= Neurona(ambiente, entrada_neuronal)
-	generador_tension_presinaptica =GeneradorTensionPresinaptica(ambiente, entrada_neuronal, start_time)
+	neurona= Neurona(ambiente, entrada_neuronal, start_time)
+	generador_tension_presinaptica =GeneradorTensionPresinaptica(ambiente, entrada_neuronal)
 	ambiente.process(neurona.run(tension_de_salida, start_time, tiempo))
-	ambiente.process(generador_tension_presinaptica.realizar_arribos_excitatorios())
+	#ambiente.process(generador_tension_presinaptica.realizar_arribos_excitatorios())
 	ambiente.process(generador_tension_presinaptica.realizar_arribos_inhibitorios())
 	#ambiente.process(generador_tension_presinaptica.realizar_arribos_nulos())
 	ambiente.run(until=0.2)
 	print("--- %s seconds ---" % (time.time() - start_time))
+	#print(tiempo)
 	plt.plot(tiempo, tension_de_salida)
 	plt.show()
 	# Y_k=np.zeros(3)

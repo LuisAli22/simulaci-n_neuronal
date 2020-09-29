@@ -2,21 +2,23 @@
 from definitions import *
 
 class Neurona(object):
-	def __init__(self, ambiente, entrada_neuronal):
+	def __init__(self, ambiente, entrada_neuronal, tiempo_de_inicio):
 		self.ambiente=ambiente
 		self.entrada_neuronal=entrada_neuronal
 		self.Y_k=np.array([0, 0, POTENCIAL_DE_REPOSO])
 		self.matriz_exponencial_excitatoria= self.construir_matriz_exponencial(TAU_EXCITATORIO)
 		self.matriz_exponencial_inhibitoria= self.construir_matriz_exponencial(TAU_INHIBITORIO)
 		self.inicio_tiempo_refractario=0
+		self.tiempo_de_arribo=0
+		self.tiempo_de_inicio=tiempo_de_inicio
 
 	def construir_matriz_exponencial(self, tau):
 		coef_11=coef_22=np.exp(-PASO/tau)
-		coef_21=PASO*np.exp(-PASO/tau)
+		coef_21=PASO*coef_11
 		coef_33= np.exp(-PASO/TAU_MEMBRANA)
 		divisor=((1/tau)-(1/TAU_MEMBRANA))
 		numerador=(coef_33 - coef_11)
-		coef_31=(numerador/divisor**2) - (coef_21/divisor)
+		coef_31=(numerador/(divisor**2)) - (coef_21/divisor)
 		coef_32=numerador/divisor
 		return np.array([	[coef_11, 0, 0],
 							[coef_21, coef_22, 0],
@@ -36,21 +38,21 @@ class Neurona(object):
 	def esta_en_periodo_refractario(self):
 		if self.inicio_tiempo_refractario == 0 :
 			return False
-		return (time.time() - self.inicio_tiempo_refractario <= TIEMPO_REFRACTARIO)
+		#print(self.ambiente.now - self.inicio_tiempo_refractario)
+		return (self.ambiente.now - self.inicio_tiempo_refractario <= TIEMPO_REFRACTARIO)
 
 	def run(self, tension_de_salida, start_time, tiempo):
 		Y_k_siguiente=np.array([0, 0, POTENCIAL_DE_REPOSO])
 		while True:
-			tension_temporal = yield self.entrada_neuronal.get()
-			tension_presinaptica = tension_temporal[0]
-			tiempo_de_arribo= tension_temporal[1]
+			tension_presinaptica = yield self.entrada_neuronal.get()
 			if self.esta_en_periodo_refractario():
 				Y_k_siguiente=np.array([0, 0, POTENCIAL_DE_REPOSO])
 			else:
 				self.inicio_tiempo_refractario= 0
 				Y_k_siguiente= self.obtener_siguiente_estado(tension_presinaptica)
 			if Y_k_siguiente[-1] >= TENSION_UMBRAL:
-				self.inicio_tiempo_refractario = time.time()
+				self.inicio_tiempo_refractario = self.ambiente.now
 			tension_de_salida.append(Y_k_siguiente[-1]*1000)
-			tiempo.append(tiempo_de_arribo)
+			#print("Tiempo: ", self.ambiente.now)
+			tiempo.append(self.ambiente.now)
 			self.Y_k=Y_k_siguiente

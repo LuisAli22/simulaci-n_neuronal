@@ -2,7 +2,6 @@
 import numpy as np
 import math
 import time
-from scipy.stats import planck
 import simpy
 
 RESISTENCIA= 60e6
