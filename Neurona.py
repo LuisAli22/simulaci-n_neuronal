@@ -30,15 +30,12 @@ class Neurona(object):
 	def obtener_siguiente_estado(self, tension):
 		input=np.array([tension, 0, 0])
 		if self.es_tension_excitatiora(tension):
-			#print("Tension exitatioria")
 			return self.matriz_exponencial_excitatoria.dot(self.Y_k)+input
-		#print("Tension inhibitoria")
 		return self.matriz_exponencial_inhibitoria.dot(self.Y_k)+input
 
 	def esta_en_periodo_refractario(self):
 		if self.inicio_tiempo_refractario == 0 :
 			return False
-		#print(self.ambiente.now - self.inicio_tiempo_refractario)
 		return (self.ambiente.now - self.inicio_tiempo_refractario <= TIEMPO_REFRACTARIO)
 
 	def run(self, tension_de_salida, start_time, tiempo):

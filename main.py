@@ -15,7 +15,7 @@ if __name__ == '__main__':
 	neurona= Neurona(ambiente, entrada_neuronal, start_time)
 	generador_tension_presinaptica =GeneradorTensionPresinaptica(ambiente, entrada_neuronal)
 	ambiente.process(neurona.run(tension_de_salida, start_time, tiempo))
-	#ambiente.process(generador_tension_presinaptica.realizar_arribos_excitatorios())
+	ambiente.process(generador_tension_presinaptica.realizar_arribos_excitatorios())
 	ambiente.process(generador_tension_presinaptica.realizar_arribos_inhibitorios())
 	#ambiente.process(generador_tension_presinaptica.realizar_arribos_nulos())
 	ambiente.run(until=0.2)
